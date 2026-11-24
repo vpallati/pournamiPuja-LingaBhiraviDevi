@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#76372c">
+  <title>Bhairavi | Puja Session</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="player.js"></script>
+</head>
+<body>
+  <header><span class="brand"><span aria-hidden="true">&#10042;</span> Bhairavi</span><span class="kicker">Session player</span></header>
+  <main>
+    <div class="intro"><p class="kicker">Devotional audio</p><h1>Puja session</h1></div>
+    <div class="layout">
+      <section class="player" aria-label="Audio player">
+        <div class="art" aria-hidden="true">
+          <svg viewBox="-110 -110 220 220" fill="none" stroke="currentColor">
+            <defs><g id="petal"><path d="M0 -28 Q-31 -52 0 -81 Q31 -52 0 -28Z M0 -39 Q-14 -54 0 -69 Q14 -54 0 -39Z"/><path d="M0 -83 L0 -89"/></g></defs>
+            <circle r="98" stroke-dasharray="1 5"/><circle r="92"/>
+            <g id="petals"></g><circle r="28"/><circle r="23"/><path d="M0 -16 Q-18 3 0 15 Q18 3 0 -16Z"/>
+          </svg>
+        </div>
+        <div class="controls"><p class="kicker" id="status" role="status">Ready to play</p><h2 id="current"></h2>
+          <audio id="audio" controls preload="metadata" aria-labelledby="current"></audio>
+          <p id="error" role="alert"></p>
+        </div>
+      </section>
+      <section class="collection" aria-labelledby="collection-title">
+        <div class="heading"><h2 id="collection-title">Recordings</h2><span id="count"></span></div>
+        <p class="hint">Play any track. Turn on Auto-play for the tracks you want to hear next, in list order.</p>
+        <div class="labels kicker"><span>Track</span><span>Auto-play</span></div>
+        <ol id="tracks"></ol>
+      </section>
+    </div>
+  </main>
+  <noscript>Please enable JavaScript to use the session player.</noscript>
+</body>
+</html>
