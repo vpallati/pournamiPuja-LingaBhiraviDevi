@@ -23,6 +23,15 @@ const statusText = document.querySelector("#status");
 const error = document.querySelector("#error");
 const list = document.querySelector("#tracks");
 let current = 0;
+let playlistURL;
+
+if ("audioSession" in navigator) {
+  navigator.audioSession.type = "playback";
+}
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.setActionHandler("play", () => play(current));
+  navigator.mediaSession.setActionHandler("pause", () => audio.pause());
+}
 
 for (let i = 0; i < 12; i++) {
   const petal = document.createElementNS("http://www.w3.org/2000/svg", "use");
@@ -39,6 +48,7 @@ const rows = files.map((file, i) => {
   row.querySelector(".title").textContent = title;
   const button = row.querySelector("button");
   const toggle = row.querySelector("input");
+  toggle.onchange = updatePlaylist;
   toggle.setAttribute("aria-label", `Auto-play ${title}`);
   button.onclick = () => {
     if (current === i && !audio.paused) audio.pause();
@@ -56,9 +66,26 @@ function render() {
     disc.textContent = playing ? "\u2161" : "\u25b6";
   });
 }
+function queuedAfterCurrent() {
+  return files.map((_, i) => i).filter(i => i > current && rows[i].toggle.checked);
+}
+function assetURL(i) {
+  return new URL(`assets/${encodeURIComponent(files[i])}`, document.baseURI).href;
+}
+function updatePlaylist() {
+  const entries = [current, ...queuedAfterCurrent()].map(i =>
+    `#EXTINF:-1,${rows[i].title}\n${assetURL(i)}\n`);
+  if (playlistURL) URL.revokeObjectURL(playlistURL);
+  playlistURL = URL.createObjectURL(new Blob(["#EXTM3U\n", ...entries], {type:"application/vnd.apple.mpegurl"}));
+  document.querySelector("#playlist").href = playlistURL;
+}
 function select(i) {
   current = i;
-  audio.src = `assets/${encodeURIComponent(files[i])}`;
+  audio.src = assetURL(i);
+  updatePlaylist();
+  if ("mediaSession" in navigator && "MediaMetadata" in window) {
+    navigator.mediaSession.metadata = new MediaMetadata({title:rows[i].title, album:"Puja session"});
+  }
   document.querySelector("#current").textContent = rows[i].title;
   error.textContent = "";
   statusText.textContent = "Ready to play";
@@ -75,18 +102,21 @@ async function play(i) {
   }
 }
 audio.onplaying = () => {
+  if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "playing";
   statusText.textContent = "Now playing";
   error.textContent = "";
   render();
 };
 audio.onpause = () => {
+  if ("mediaSession" in navigator && audio.paused) navigator.mediaSession.playbackState = "paused";
   if (!audio.ended && audio.paused) statusText.textContent = "Paused";
   render();
 };
 audio.onended = () => {
-  const next = rows.findIndex(({toggle}, i) => i > current && toggle.checked);
-  if (next !== -1) play(next);
+  const [next] = queuedAfterCurrent();
+  if (next !== undefined) play(next);
   else {
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = "none";
     statusText.textContent = "Finished";
     render();
   }

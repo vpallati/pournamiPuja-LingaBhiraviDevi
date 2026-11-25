@@ -20,6 +20,10 @@ h1 { font-size:clamp(2.8rem,6vw,4.5rem); letter-spacing:-.05em; line-height:1.15
 #current { font-size:1.6rem; line-height:1.2; margin:8px 0 20px; }
 audio { width:100%; display:block; }
 #error:not(:empty) { margin-top:12px; color:#962d1e; }
+.locked-help { margin-top:16px; font-size:.9rem; }
+.locked-help summary { cursor:pointer; }
+.locked-help p { margin:8px 0; }
+.locked-help a { color:#81422e; }
 .heading h2 { font-size:2rem; letter-spacing:-.035em; }
 #count { border:1px solid #d8cdbb; border-radius:20px; padding:5px 10px; color:#725d45; }
 .hint { font-size:.92rem; color:#675e53; max-width:55ch; margin:6px 0 24px; }
